@@ -1,0 +1,22 @@
+{
+    "name": "تطبيق مُدَّكِر للقرآن الكريم",
+    "short_name": "مُدَّكِر",
+    "description": "تطبيق اختباري لمراجعة وتثبيت حفظ القرآن الكريم",
+    "start_url": "./index.htm",
+    "display": "standalone",
+    "background_color": "#0f172a",
+    "theme_color": "#0d9488",
+    "orientation": "portrait",
+    "icons": [
+      {
+        "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "https://cdn-icons-png.flaticon.com/512/3406/3406828.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُدَّكِر | منصة اختبارات القرآن الكريم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d9488">
+</head>
+<body>
+
+    <!-- الشريط العلوي -->
+    <header class="navbar">
+        <div class="logo">
+            <span>مُدَّكِر</span>
+        </div>
+
+        <div class="menu-container">
+            <button id="quran-holder-btn" class="quran-holder-btn" title="القائمة الرئيسية">
+                <i class="fa-solid fa-book-quran"></i>
+            </button>
+
+            <div id="dropdown-menu" class="dropdown-menu hidden">
+                <div class="menu-header">
+                    <div class="user-avatar">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span id="user-display-name" class="user-name">زائر</span>
+                        <span id="total-score-badge" class="user-score"><i class="fa-solid fa-trophy"></i> النقاط: <span id="user-points-count" class="en-number">0</span></span>
+                    </div>
+                </div>
+                
+                <hr class="menu-divider">
+
+                <ul class="menu-items">
+                    <li id="theme-toggle" class="menu-item">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                        <span id="theme-text">الوضع الليلي</span>
+                    </li>
+                    <li id="open-history-btn" class="menu-item">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>سجل الاختبارات السابقة</span>
+                    </li>
+                    <li id="open-feedback-menu-btn" class="menu-item">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        <span>الإبلاغ أو تقديم اقتراح</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-viewport">
+        
+        <!-- شاشة 1: الترحيب -->
+        <section id="step-1" class="app-card">
+            <div id="onboarding-carousel">
+                <div class="onboarding-slide active" data-slide="1">
+                    <div class="quran-quote">
+                        <p class="quran-text">"وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مَّدَّكِرٍ"</p>
+                        <span class="surah-ref">[سورة القمر: 17]</span>
+                    </div>
+                    <h1>منصة مراجعة القرآن الكريم</h1>
+                    <p>رفيقك الذكي لمراجعة القرآن الكريم وتثبيت الحفظ باختبارات تفاعلية ومؤثرات صوتية.</p>
+                </div>
+
+                <div class="onboarding-slide" data-slide="2">
+                    <h2>💡 كيف تستفيد من المنصة؟</h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <i class="fa-solid fa-bullseye feature-icon"></i>
+                            <div>
+                                <strong>تحديد النطاق:</strong>
+                                <p>اختر السور، الأجزاء، الأحزاب، أو الأرباع (بالرقم وبداية النص).</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa-solid fa-bolt feature-icon"></i>
+                            <div>
+                                <strong>تنوع الأسئلة والنقاط:</strong>
+                                <p>تصلك نقطة مقابل كل إجابة صحيحة تضاف لحسابك مباشرة.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="onboarding-slide" data-slide="3">
+                    <h2>☁️ حفظ بياناتك وإنجازاتك</h2>
+                    <p>أدخل اسم حسابك للمزامنة والحفاظ على نقاطك عند الدخول من أي جهاز آخر.</p>
+
+                    <div class="account-prompt-box">
+                        <div id="guest-mode-box">
+                            <p>💡 <strong>أنت تعمل حالياً بوضع الزائر:</strong> يتم حفظ تقدمك محلياً.</p>
+                            <button id="show-login-btn" class="btn-secondary-outline">
+                                <i class="fa-solid fa-user-plus"></i> تسجل أو تسجيل الدخول
+                            </button>
+                        </div>
+
+                        <form id="login-form-box" class="hidden">
+                            <input type="text" id="user-name-input" placeholder="اسم المستخدم (للمزامنة)..." class="input-styled" required>
+                            <button type="submit" id="login-submit-btn" class="btn-primary">دخول والمزامنة</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="onboarding-footer">
+                    <div class="dots-indicator">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    
+                    <div class="carousel-actions">
+                        <button id="skip-onboarding-btn" class="btn-text">تخطي</button>
+                        <button id="next-slide-btn" class="btn-primary">
+                            التالي <i class="fa-solid fa-arrow-left arrow-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- شاشة 2: إعداد الاختبار -->
+        <section id="step-2" class="app-card hidden">
+            <h2>⚙️ إعداد الاختبار</h2>
+            
+            <div class="form-group">
+                <label>📍 حدد نطاق الاختبار:</label>
+                <div class="scope-tabs">
+                    <button type="button" class="scope-tab active" data-scope="surahs">📖 السور</button>
+                    <button type="button" class="scope-tab" data-scope="juzs">🧩 الأجزاء</button>
+                    <button type="button" class="scope-tab" data-scope="ahzab">📚 الأحزاب</button>
+                    <button type="button" class="scope-tab" data-scope="quarters">⭐ الأرباع</button>
+                </div>
+                <div id="scope-selection-container" class="items-grid">
+                    <p class="loading-text">جاري تحميل البيانات...</p>
+                </div>
+            </div>
+
+            <!-- الأسئلة الستة المعتمدة -->
+            <div class="form-group">
+                <label>🎯 اختر أنواع الأسئلة (الأنواع الستة):</label>
+                <div class="checkbox-grid">
+                    <label class="checkbox-card">
+                        <input type="checkbox" value="completion" class="quiz-type custom-checkbox" checked>
+                        <span>1. إكمال باقي الآية</span>
+                    </label>
+                    <label class="checkbox-card">
+                        <input type="checkbox" value="missing_word" class="quiz-type custom-checkbox" checked>
+                        <span>2. الكلمة الناقصة في المنتصف</span>
+                    </label>
+                    <label class="checkbox-card">
+                        <input type="checkbox" value="surah_name" class="quiz-type custom-checkbox" checked>
+                        <span>3. تحديد اسم السورة</span>
+                    </label>
+                    <label class="checkbox-card">
+                        <input type="checkbox" value="start_end" class="quiz-type custom-checkbox" checked>
+                        <span>4. بداية أو نهاية الآية</span>
+                    </label>
+                    <label class="checkbox-card">
+                        <input type="checkbox" value="word_order" class="quiz-type custom-checkbox" checked>
+                        <span>5. ترتيب كلمات الآية</span>
+                    </label>
+                    <label class="checkbox-card">
+                        <input type="checkbox" value="next_prev_surah" class="quiz-type custom-checkbox" checked>
+                        <span>6. السورة التالية/السابقة</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="questions-count">🔢 عدد الأسئلة المطلوب:</label>
+                <div class="custom-number-wrapper">
+                    <button type="button" class="num-btn num-minus" id="btn-minus-q"><i class="fa-solid fa-minus"></i></button>
+                    <input type="number" id="questions-count" min="1" max="50" value="5" class="input-styled en-number custom-num-input" readonly>
+                    <button type="button" class="num-btn num-plus" id="btn-plus-q"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="difficulty-header">
+                    <label for="difficulty-slider">📊 مستوى الصعوبة:</label>
+                    <span id="difficulty-badge" class="diff-badge level-easy">سهل</span>
+                </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="difficulty-slider" min="1" max="3" value="1" step="0.01">
+                </div>
+            </div>
+
+            <div class="form-group timer-settings-group">
+                <div class="timer-toggle-row">
+                    <label for="timer-toggle" class="toggle-label">
+                        <input type="checkbox" id="timer-toggle" class="custom-checkbox">
+                        <span>⏱️ تفعيل التوقيت الزمني</span>
+                    </label>
+                </div>
+                <div id="timer-input-container" class="timer-input-box hidden">
+                    <label for="seconds-per-question">عدد الثواني لكل سؤال:</label>
+                    <div class="custom-number-wrapper">
+                        <button type="button" class="num-btn num-minus" id="btn-minus-s"><i class="fa-solid fa-minus"></i></button>
+                        <input type="number" id="seconds-per-question" min="5" max="120" value="30" class="input-styled en-number custom-num-input" readonly>
+                        <button type="button" class="num-btn num-plus" id="btn-plus-s"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-notice-box">
+                <p>⚠️ <strong>تنبيه هام:</strong> الأسئلة تُولد بدقة من النطاق المحدد.</p>
+                <button type="button" id="trigger-feedback-modal-btn" class="btn-feedback-trigger">
+                    <i class="fa-solid fa-flag"></i> الإبلاغ عن ملاحظة أو تقديم اقتراح
+                </button>
+            </div>
+
+            <div class="actions">
+                <button id="back-to-step1-btn" class="btn-secondary">
+                    <i class="fa-solid fa-arrow-right arrow-icon"></i> الرجوع
+                </button>
+                <button id="start-btn" class="btn-primary">
+                    ابدأ الاختبار الآن <i class="fa-solid fa-play icon-margin"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- شاشة 3: الأسئلة -->
+        <section id="step-3" class="app-card hidden">
+            <div class="quiz-header">
+                <span id="question-badge" class="badge">نوع السؤال</span>
+                <div id="quiz-timer-display" class="quiz-timer hidden">
+                    <i class="fa-solid fa-clock"></i> <span id="timer-seconds" class="en-number">30</span> ثانية
+                </div>
+                <span id="progress-text">سؤال <span class="en-number">1</span> من <span class="en-number">5</span></span>
+            </div>
+            
+            <div class="quran-prompt">
+                <p id="question-title" class="instruction">...</p>
+                <p id="verse-text" class="quran-text">...</p>
+            </div>
+
+            <div id="options-container" class="options-grid"></div>
+
+            <div class="quiz-footer-actions">
+                <button id="next-btn" class="btn-primary">
+                    السؤال التالي <i class="fa-solid fa-arrow-left arrow-icon"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- شاشة 4: النتيجة -->
+        <section id="step-4" class="app-card hidden">
+            <div class="result-box">
+                <h2>🎉 أتممت الاختبار بنجاح!</h2>
+                <div class="score-display">
+                    <span id="score-text" class="en-number">0 / 0</span>
+                    <p id="score-message">رسالة التقييم...</p>
+                </div>
+
+                <div class="points-earned-box">
+                    🏆 <strong>النقاط المكتسبة:</strong> +<span id="earned-points" class="en-number">0</span> نقطة (1 نقطة/إجابة صحيح)
+                </div>
+
+                <div class="time-spent-box">
+                    ⏱️ <strong>الزمن الكلي المستغرق:</strong> <span id="total-time-spent" class="en-number">00:00</span>
+                </div>
+
+                <button id="toggle-errors-btn" class="btn-secondary">عرض التفاصيل والتصحيح 👁️</button>
+                
+                <div id="errors-container" class="errors-list hidden"></div>
+
+                <div class="actions">
+                    <button id="restart-btn" class="btn-primary">
+                        <i class="fa-solid fa-rotate-right arrow-icon"></i> إعادة الاختبار
+                    </button>
+                    <button id="home-btn" class="btn-secondary">
+                        <i class="fa-solid fa-house arrow-icon"></i> الصفحة الرئيسية
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- نافذة سجل الاختبارات المزودة بإمكانية المسح والتفاصيل [؟] -->
+    <div id="history-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> سجل الاختبارات السابقة</h3>
+                <button id="close-history-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div id="history-list-container" class="modal-body history-box"></div>
+            <div class="modal-footer-actions">
+                <button id="clear-history-btn" class="btn-danger-outline">
+                    <i class="fa-solid fa-trash-can"></i> مسح السجل بالكامل
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تفاصيل الاختبار السلسة [؟] -->
+    <div id="details-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-circle-question"></i> تفاصيل الاختبار والأخطاء</h3>
+                <button id="close-details-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div id="details-modal-body" class="modal-body history-box"></div>
+        </div>
+    </div>
+
+    <!-- نافذة الاقتراحات والإبلاغ -->
+    <div id="feedback-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-pen-to-square"></i> الإبلاغ عن ملاحظة</h3>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <form id="feedback-form" class="modal-body">
+                <div class="form-group">
+                    <label for="feedback-type">نوع الملاحظة:</label>
+                    <select id="feedback-type" class="input-styled" required>
+                        <option value="typo">خطأ مطبعي في نص الآية</option>
+                        <option value="wrong_answer">خطأ في الإجابة الصحيحة</option>
+                        <option value="suggestion">اقتراح خاصية جديدة</option>
+                        <option value="other">ملاحظات عامة أخرى</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="feedback-details">التفاصيل والتوضيح:</label>
+                    <textarea id="feedback-details" class="input-styled textarea-styled" rows="4" placeholder="اكتب ملاحظتك بالتفصيل..." required></textarea>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" id="cancel-feedback-btn" class="btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn-primary">إرسال</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
