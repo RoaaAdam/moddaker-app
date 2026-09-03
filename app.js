@@ -1,4 +1,47 @@
+// ==========================================
+// 1. إعدادات Firebase (استبدلي الكائن بالذي نسخته)
+// Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAShRnY6XvH0sMAPl9s_FHioH0Ytb3Gf9w",
+  authDomain: "mudakkir-app.firebaseapp.com",
+  projectId: "mudakkir-app",
+  storageBucket: "mudakkir-app.firebasestorage.app",
+  messagingSenderId: "120022023023",
+  appId: "1:120022023023:web:6d1a84448cd73d2fca869a",
+  measurementId: "G-DKLL56Z7VG"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+// ==========================================
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// تشغيل خدمات Firebase
+if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = typeof firebase !== 'undefined' ? firebase.firestore() : null;
+
+// ==========================================
+// 2. المحرك الرئيسي عند تحميل الصفحة
+// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
+
     // --- الصوتيات المحلية عبر Web Audio API ---
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
@@ -41,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ]
     };
 
-    // --- عناصر الواجهة ---
+    // --- عناصر الواجهة (DOM Elements) ---
     const quranHolderBtn = document.getElementById("quran-holder-btn");
     const dropdownMenu = document.getElementById("dropdown-menu");
     const themeToggle = document.getElementById("theme-toggle");
@@ -82,25 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const startBtn = document.getElementById("start-btn");
     const backToStep1Btn = document.getElementById("back-to-step1-btn");
 
-    const questionBadge = document.getElementById("question-badge");
-    const progressText = document.getElementById("progress-text");
-    const questionTitle = document.getElementById("question-title");
-    const verseText = document.getElementById("verse-text");
-    const optionsContainer = document.getElementById("options-container");
-    const nextBtn = document.getElementById("next-btn");
-
-    const quizTimerDisplay = document.getElementById("quiz-timer-display");
-    const timerSecondsSpan = document.getElementById("timer-seconds");
-
-    const scoreText = document.getElementById("score-text");
-    const scoreMessage = document.getElementById("score-message");
-    const earnedPointsSpan = document.getElementById("earned-points");
-    const totalTimeSpentSpan = document.getElementById("total-time-spent");
-    const toggleErrorsBtn = document.getElementById("toggle-errors-btn");
-    const errorsContainer = document.getElementById("errors-container");
-    const restartBtn = document.getElementById("restart-btn");
-    const homeBtn = document.getElementById("home-btn");
-
     const historyModal = document.getElementById("history-modal");
     const openHistoryBtn = document.getElementById("open-history-btn");
     const closeHistoryModalBtn = document.getElementById("close-history-modal-btn");
@@ -118,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelFeedbackBtn = document.getElementById("cancel-feedback-btn");
     const feedbackForm = document.getElementById("feedback-form");
 
-    // --- حالة البيانات والتخزين ---
+    // --- حالة البيانات الموحدة والمزامنة ---
     let currentSlide = 0;
     let allSurahs = [];
     let currentScope = "surahs";
@@ -126,13 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentQuestionIndex = 0;
     let userScore = 0;
     let userAnswersLog = [];
-    let timerInterval = null;
-    let initialTime = 30;
-    let timeLeft = 0;
-    let warningTriggered = false;
-    let quizStartTime = null;
 
     let currentUser = localStorage.getItem("mudakkir_user") || "زائر";
+    let currentUserEmail = localStorage.getItem("mudakkir_email") || "";
     let userPoints = parseInt(localStorage.getItem(`mudakkir_points_${currentUser}`)) || 0;
     let quizHistory = JSON.parse(localStorage.getItem(`mudakkir_history_${currentUser}`)) || [];
 
@@ -142,37 +162,80 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateUserDataUI();
 
-    function saveUserData() {
+    async function loadUserDataFromCloud(email) {
+        if (!email || !db) return;
+        try {
+            const userDoc = await db.collection("users").doc(email.toLowerCase()).get();
+            if (userDoc.exists) {
+                const data = userDoc.data();
+                currentUser = data.name || currentUser;
+                userPoints = data.points || 0;
+                quizHistory = data.history || [];
+                
+                saveUserData(false);
+                updateUserDataUI();
+                alert(`مرحباً بك مجدداً ${currentUser}! تم جلب بياناتك بنجاح من السحابة.`);
+            } else {
+                saveUserData(true);
+            }
+        } catch (error) {
+            console.error("خطأ في جلب البيانات السحابية:", error);
+        }
+    }
+
+    function saveUserData(syncToCloud = true) {
         localStorage.setItem("mudakkir_user", currentUser);
+        localStorage.setItem("mudakkir_email", currentUserEmail);
         localStorage.setItem(`mudakkir_points_${currentUser}`, userPoints);
         localStorage.setItem(`mudakkir_history_${currentUser}`, JSON.stringify(quizHistory));
         updateUserDataUI();
+
+        if (syncToCloud && currentUserEmail && db) {
+            db.collection("users").doc(currentUserEmail.toLowerCase()).set({
+                name: currentUser,
+                email: currentUserEmail,
+                points: userPoints,
+                history: quizHistory,
+                lastLogin: new Date()
+            }, { merge: true });
+        }
+    }
+
+    if (currentUserEmail) {
+        loadUserDataFromCloud(currentUserEmail);
     }
 
     if (showLoginBtn) {
         showLoginBtn.addEventListener("click", () => {
-            document.getElementById("guest-mode-box").classList.add("hidden");
-            loginFormBox.classList.remove("hidden");
+            const guestBox = document.getElementById("guest-mode-box");
+            if(guestBox) guestBox.classList.add("hidden");
+            if(loginFormBox) loginFormBox.classList.remove("hidden");
         });
     }
 
     if (loginFormBox) {
-        loginFormBox.addEventListener("submit", (e) => {
+        loginFormBox.addEventListener("submit", async (e) => {
             e.preventDefault();
-            const inputVal = document.getElementById("user-name-input").value.trim();
-            if (inputVal) {
-                currentUser = inputVal;
-                userPoints = parseInt(localStorage.getItem(`mudakkir_points_${currentUser}`)) || 0;
-                quizHistory = JSON.parse(localStorage.getItem(`mudakkir_history_${currentUser}`)) || [];
+            const nameInput = document.getElementById("user-name-input");
+            const emailInput = document.getElementById("user-email-input");
+            
+            const nameVal = nameInput ? nameInput.value.trim() : "";
+            const emailVal = emailInput ? emailInput.value.trim() : "";
+
+            if (nameVal) {
+                currentUser = nameVal;
+                currentUserEmail = emailVal;
+                if (emailVal) await loadUserDataFromCloud(emailVal);
                 saveUserData();
-                alert(`مرحباً بك ${currentUser}! تم جلب نقاطك وسجلك بنجاح.`);
+
                 loginFormBox.classList.add("hidden");
-                document.getElementById("guest-mode-box").classList.remove("hidden");
+                const guestBox = document.getElementById("guest-mode-box");
+                if (guestBox) guestBox.classList.remove("hidden");
             }
         });
     }
 
-    // --- تسريع التخزين المحلي للبيانات ---
+    // --- جلب وتخزين بيانات المصحف ---
     async function fetchSurahsList() {
         const cachedSurahs = localStorage.getItem("mudakkir_cached_surahs");
         if (cachedSurahs) {
@@ -181,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        scopeContainer.innerHTML = "<p class='loading-text'>⏳ جاري تحميل بيانات المصحف الشريف...</p>";
+        if (scopeContainer) scopeContainer.innerHTML = "<p class='loading-text'>⏳ جاري تحميل بيانات المصحف الشريف...</p>";
         try {
             const res = await fetch("https://api.alquran.cloud/v1/surah");
             const data = await res.json();
@@ -191,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderScopeItems();
             }
         } catch (err) {
-            scopeContainer.innerHTML = "<p style='color:red;'>تعذر جلب البيانات. تحقق من اتصال الإنترنِت.</p>";
+            if (scopeContainer) scopeContainer.innerHTML = "<p style='color:red;'>تعذر جلب البيانات. تحقق من اتصال الإنترنِت.</p>";
         }
     }
 
@@ -199,20 +262,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const cacheKey = `mudakkir_surah_detail_${surahNum}`;
         const cachedDetail = localStorage.getItem(cacheKey);
 
-        if (cachedDetail) {
-            return JSON.parse(cachedDetail);
-        }
+        if (cachedDetail) return JSON.parse(cachedDetail);
 
-        const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
-        const data = await res.json();
-        if (data.code === 200) {
-            localStorage.setItem(cacheKey, JSON.stringify(data.data));
-            return data.data;
-        }
+        try {
+            const res = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
+            const data = await res.json();
+            if (data.code === 200) {
+                localStorage.setItem(cacheKey, JSON.stringify(data.data));
+                return data.data;
+            }
+        } catch(e) {}
         return null;
     }
 
-    // --- العدادات والاهتزاز الناعم ---
+    // --- العدادات والاهتزاز ---
     function setupCustomNumberInput(btnMinus, btnPlus, input, min, max, step = 1) {
         if (!btnMinus || !btnPlus || !input) return;
         btnMinus.addEventListener("click", () => {
@@ -233,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupCustomNumberInput(btnMinusS, btnPlusS, sCountInput, 5, 120, 5);
 
     function triggerSmoothShake(element) {
+        if (!element) return;
         playErrorSound();
         element.classList.remove("shake-error");
         void element.offsetWidth;
@@ -244,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (quranHolderBtn) {
         quranHolderBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            dropdownMenu.classList.toggle("hidden");
+            if(dropdownMenu) dropdownMenu.classList.toggle("hidden");
         });
     }
     document.addEventListener("click", () => { if (dropdownMenu) dropdownMenu.classList.add("hidden"); });
@@ -253,8 +317,8 @@ document.addEventListener("DOMContentLoaded", () => {
         themeToggle.addEventListener("click", () => {
             document.body.classList.toggle("dark-mode");
             const isDark = document.body.classList.contains("dark-mode");
-            themeIcon.className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
-            themeText.textContent = isDark ? "الوضع النهار" : "الوضع الليلي";
+            if(themeIcon) themeIcon.className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
+            if(themeText) themeText.textContent = isDark ? "الوضع النهار" : "الوضع الليلي";
         });
     }
 
@@ -297,7 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- عرض وإدارة سجل الاختبارات تفصيلياً ---
+    // --- عرض السجل والتفاصيل ---
     function renderHistoryList() {
         if(!historyListContainer) return;
         historyListContainer.innerHTML = "";
@@ -355,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const historyItem = quizHistory[historyIndex];
         container.innerHTML = "";
 
-        if (historyItem.logs.length === 0) {
+        if (!historyItem.logs || historyItem.logs.length === 0) {
             container.innerHTML = "<p style='text-align:center;'>لا تتوفر أسئلة في هذا الاختبار حالياً.</p>";
             return;
         }
@@ -437,8 +501,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if(timerToggle) {
         timerToggle.addEventListener("change", (e) => {
-            if (e.target.checked) timerInputContainer.classList.remove("hidden");
-            else timerInputContainer.classList.add("hidden");
+            if (e.target.checked && timerInputContainer) timerInputContainer.classList.remove("hidden");
+            else if (timerInputContainer) timerInputContainer.classList.add("hidden");
         });
     }
 
@@ -463,15 +527,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if(skipBtn) skipBtn.addEventListener("click", goToStep2);
 
     function goToStep2() {
-        step1.classList.add("hidden");
-        step2.classList.remove("hidden");
+        if(step1) step1.classList.add("hidden");
+        if(step2) step2.classList.remove("hidden");
         if (allSurahs.length === 0) fetchSurahsList();
     }
 
     if(backToStep1Btn) {
         backToStep1Btn.addEventListener("click", () => {
-            step2.classList.add("hidden");
-            step1.classList.remove("hidden");
+            if(step2) step2.classList.add("hidden");
+            if(step1) step1.classList.remove("hidden");
         });
     }
 
@@ -509,60 +573,47 @@ document.addEventListener("DOMContentLoaded", () => {
         return label;
     }
 
-    if(startBtn) startBtn.addEventListener("click", () => startNewQuiz());
-
-    async function startNewQuiz() {
-        initAudio();
-        const selectedScopeBoxes = document.querySelectorAll(".scope-checkbox:checked");
-        const selectedScopes = Array.from(selectedScopeBoxes).map(cb => cb.value);
-
-        if (selectedScopes.length === 0) {
-            triggerSmoothShake(scopeContainer);
-            alert("يرجى اختيار عنصر واحد على الأقل من النطاق.");
-            return;
+    // --- خوارزميات التوليد والأسئلة ---
+    function shuffleArray(array) {
+        let arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-
-        const selectedTypes = Array.from(document.querySelectorAll(".quiz-type:checked")).map(cb => cb.value);
-        if (selectedTypes.length === 0) {
-            alert("يرجى اختيار نوع أسئلة واحد على الأقل من الأنواع الستة.");
-            return;
-        }
-
-        const finalCount = parseInt(qCountInput.value) || 5;
-
-        startBtn.disabled = true;
-        startBtn.innerHTML = `جاري إعداد الأسئلة... <i class="fa-solid fa-spinner fa-spin icon-margin"></i>`;
-
-        try {
-            let targetSurahNumbers = extractSurahNumbers(selectedScopes);
-            generatedQuestions = await buildDynamicUnlimitedQuestions(targetSurahNumbers, finalCount, selectedTypes);
-
-            if (generatedQuestions.length === 0) {
-                alert("تعذر توليد أسئلة من النطاق المحدد.");
-                resetStartButton();
-                return;
-            }
-
-            currentQuestionIndex = 0;
-            userScore = 0;
-            userAnswersLog = [];
-            quizStartTime = new Date();
-
-            resetStartButton();
-            step2.classList.add("hidden");
-            step3.classList.remove("hidden");
-
-            showQuestion(currentQuestionIndex);
-        } catch (err) {
-            alert("حدث خطأ أثناء تحميل الأسئلة.");
-            resetStartButton();
-        }
+        return arr;
     }
 
-    function resetStartButton() {
-        if(!startBtn) return;
-        startBtn.disabled = false;
-        startBtn.innerHTML = `ابدأ الاختبار الآن <i class="fa-solid fa-play icon-margin"></i>`;
+    function getDynamicAyahDistractors(correctSnippet, poolOfAyahs) {
+        let distractors = new Set();
+        let attempts = 0;
+        while (distractors.size < 3 && attempts < 100) {
+            attempts++;
+            const randomAyah = poolOfAyahs[Math.floor(Math.random() * poolOfAyahs.length)];
+            if (!randomAyah) continue;
+            const words = randomAyah.text.split(" ");
+            if (words.length >= 3) {
+                const snippetLength = Math.min(words.length, Math.floor(Math.random() * 3) + 3);
+                const snippet = words.slice(0, snippetLength).join(" ") + "...";
+                if (snippet !== correctSnippet) distractors.add(snippet);
+            }
+        }
+        return Array.from(distractors);
+    }
+
+    function getDynamicWordDistractors(correctWord, poolOfAyahs) {
+        let distractors = new Set();
+        let attempts = 0;
+        while (distractors.size < 3 && attempts < 100) {
+            attempts++;
+            const randomAyah = poolOfAyahs[Math.floor(Math.random() * poolOfAyahs.length)];
+            if (!randomAyah) continue;
+            const words = randomAyah.text.split(" ");
+            const randomWord = words[Math.floor(Math.random() * words.length)].replace(/[^\u0600-\u06FF]/g, "");
+            if (randomWord && randomWord !== correctWord && randomWord.length > 2) {
+                distractors.add(randomWord);
+            }
+        }
+        return Array.from(distractors);
     }
 
     function extractSurahNumbers(scopes) {
@@ -580,13 +631,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return Array.from(surahSet);
     }
 
-    // --- خوارزمية التوليد غير المحدودة والديناميكية بالكامل ---
     async function buildDynamicUnlimitedQuestions(surahNumbers, totalCount, allowedTypes) {
         let questions = [];
         let usedKeysSet = new Set();
         const fetchedSurahs = await Promise.all(surahNumbers.map(num => fetchSurahDetail(num)));
 
-        // تجميع كافة آيات النطاق المختار لإنشاء مشتتات حقيقية
         let poolOfAyahs = [];
         fetchedSurahs.forEach(s => {
             if (s && s.ayahs) {
@@ -605,15 +654,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const idx = Math.floor(Math.random() * ayahs.length);
             const ayah = ayahs[idx];
 
-            // رقم عشوائي كجزء من المפתח لضمان عدم حدوث تكرار
             const uniqueKey = `${randomSurah.number}_${ayah.numberInSurah}_${chosenType}_${Math.random()}`;
             if (usedKeysSet.has(uniqueKey)) continue;
 
-            // 1. إكمال باقي الآية
             if (chosenType === "completion" && idx < ayahs.length - 1) {
                 const nextAyah = ayahs[idx + 1];
                 const words = nextAyah.text.split(" ");
-                // اقتطاع ديناميكي متعدّد الطول (3 إلى 5 كلمات)
                 const snippetLength = Math.min(words.length, Math.floor(Math.random() * 3) + 3);
                 const snippet = words.slice(0, snippetLength).join(" ") + "...";
 
@@ -627,13 +673,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     surahName: randomSurah.name
                 });
             } 
-            // 2. الكلمة الناقصة في المنتصف
             else if (chosenType === "missing_word") {
                 const words = ayah.text.split(" ");
                 if (words.length < 4) continue;
-                // إمكانية اختيار كلمة من أي موقع بالآية عشوائياً
                 const targetIdx = Math.floor(Math.random() * (words.length - 2)) + 1;
-                const missingWord = words[targetIdx].replace(/[^\u0600-\u06FF]/g, ""); // تنظيف الكلمة
+                const missingWord = words[targetIdx].replace(/[^\u0600-\u06FF]/g, "");
                 words[targetIdx] = `<strong style="color:var(--primary-color);">[ ... ]</strong>`;
 
                 usedKeysSet.add(uniqueKey);
@@ -646,7 +690,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     surahName: randomSurah.name
                 });
             } 
-            // 3. تحديد اسم السورة
             else if (chosenType === "surah_name") {
                 const otherNames = allSurahs.map(s => s.name).filter(n => n !== randomSurah.name);
                 usedKeysSet.add(uniqueKey);
@@ -659,7 +702,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     surahName: randomSurah.name
                 });
             } 
-            // 4. بداية أو نهاية الآية
             else if (chosenType === "start_end") {
                 const words = ayah.text.split(" ");
                 if (words.length < 5) continue;
@@ -677,7 +719,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     surahName: randomSurah.name
                 });
             } 
-            // 5. ترتيب كلمات الآية
             else if (chosenType === "word_order") {
                 const words = ayah.text.split(" ");
                 if (words.length < 4 || words.length > 7) continue;
@@ -699,7 +740,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     surahName: randomSurah.name
                 });
             } 
-            // 6. السورة التالية أو السابقة
             else if (chosenType === "next_prev_surah") {
                 const isNext = Math.random() > 0.5;
                 if (isNext && randomSurah.number < 114) {
@@ -710,7 +750,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         title: `ما هي السورة التي تأتي مباشرة **بعد** سورة ${randomSurah.name}؟`,
                         promptHtml: `سورة ${randomSurah.name}`,
                         correctAnswer: targetName,
-                        options: shuffleArray([targetName, ...allSurahs.map(s => s.name).filter(n => n !== targetName).slice(0, 3)]),
+                        options: shuffleArray([targetName, ...shuffleArray(allSurahs.map(s => s.name).filter(n => n !== targetName)).slice(0, 3)]),
                         surahName: randomSurah.name
                     });
                 } else if (!isNext && randomSurah.number > 1) {
@@ -721,7 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         title: `ما هي السورة التي تأتي مباشرة **قبل** سورة ${randomSurah.name}؟`,
                         promptHtml: `سورة ${randomSurah.name}`,
                         correctAnswer: targetName,
-                        options: shuffleArray([targetName, ...allSurahs.map(s => s.name).filter(n => n !== targetName).slice(0, 3)]),
+                        options: shuffleArray([targetName, ...shuffleArray(allSurahs.map(s => s.name).filter(n => n !== targetName)).slice(0, 3)]),
                         surahName: randomSurah.name
                     });
                 }
@@ -730,239 +770,162 @@ document.addEventListener("DOMContentLoaded", () => {
         return questions;
     }
 
-    // --- توليد مشتتات ديناميكية متجددة للآيات ---
-    function getDynamicAyahDistractors(correctSnippet, pool) {
-        let distractors = new Set();
-        let shuffledPool = shuffleArray([...pool]);
+    if(startBtn) {
+        startBtn.addEventListener("click", async () => {
+            initAudio();
+            const selectedScopeBoxes = document.querySelectorAll(".scope-checkbox:checked");
+            const selectedScopes = Array.from(selectedScopeBoxes).map(cb => cb.value);
 
-        for (let item of shuffledPool) {
-            let words = item.text.split(" ");
-            if (words.length >= 3) {
-                let snip = words.slice(0, 3).join(" ") + "...";
-                if (snip !== correctSnippet) distractors.add(snip);
+            if (selectedScopes.length === 0) {
+                triggerSmoothShake(scopeContainer);
+                alert("يرجى اختيار عنصر واحد على الأقل من النطاق.");
+                return;
             }
-            if (distractors.size >= 3) break;
-        }
 
-        while (distractors.size < 3) {
-            distractors.add("وَإِذَا قِيلَ لَهُمْ...");
-            distractors.add("إِنَّ الَّذِينَ آمَنُوا...");
-            distractors.add("قُلْ هُوَ اللَّهُ...");
-        }
-        return Array.from(distractors).slice(0, 3);
-    }
+            const selectedTypes = Array.from(document.querySelectorAll(".quiz-type:checked")).map(cb => cb.value);
+            if (selectedTypes.length === 0) {
+                alert("يرجى اختيار نوع أسئلة واحد على الأقل من الأنواع الستة.");
+                return;
+            }
 
-    // --- توليد مشتتات ديناميكية متجددة للكلمات ---
-    function getDynamicWordDistractors(correctWord, pool) {
-        let distractors = new Set();
-        let shuffledPool = shuffleArray([...pool]);
+            const finalCount = parseInt(qCountInput ? qCountInput.value : 5) || 5;
 
-        for (let item of shuffledPool) {
-            let words = item.text.split(" ");
-            for (let w of words) {
-                let cleanW = w.replace(/[^\u0600-\u06FF]/g, "");
-                if (cleanW.length >= 3 && cleanW !== correctWord) {
-                    distractors.add(cleanW);
+            startBtn.disabled = true;
+            startBtn.innerHTML = `جاري إعداد الأسئلة... <i class="fa-solid fa-spinner fa-spin icon-margin"></i>`;
+
+            try {
+                let targetSurahNumbers = extractSurahNumbers(selectedScopes);
+                generatedQuestions = await buildDynamicUnlimitedQuestions(targetSurahNumbers, finalCount, selectedTypes);
+
+                if (generatedQuestions.length === 0) {
+                    alert("تعذر توليد أسئلة من النطاق المحدد.");
+                    resetStartButton();
+                    return;
                 }
-                if (distractors.size >= 3) break;
-            }
-            if (distractors.size >= 3) break;
-        }
 
-        const fallback = ["عَلِيمٌ", "حَكِيمٌ", "غَفُورٌ", "رَحِيمٌ", "عَظِيمٌ"];
-        let i = 0;
-        while (distractors.size < 3) {
-            if (fallback[i] !== correctWord) distractors.add(fallback[i]);
-            i++;
-        }
-        return Array.from(distractors).slice(0, 3);
+                currentQuestionIndex = 0;
+                userScore = 0;
+                userAnswersLog = [];
+
+                resetStartButton();
+                if(step2) step2.classList.add("hidden");
+                if(step3) step3.classList.remove("hidden");
+
+                showQuestion(currentQuestionIndex);
+            } catch (err) {
+                alert("حدث خطأ أثناء تحميل الأسئلة.");
+                resetStartButton();
+            }
+        });
     }
 
-    function shuffleArray(arr) { return arr.sort(() => Math.random() - 0.5); }
-
-    // --- إدارة العرض والتفاعلات أثناء الاختبار ---
-    let selectedAnswerForCurrentQ = null;
+    function resetStartButton() {
+        if(!startBtn) return;
+        startBtn.disabled = false;
+        startBtn.innerHTML = `ابدأ الاختبار الآن <i class="fa-solid fa-play icon-margin"></i>`;
+    }
 
     function showQuestion(index) {
-        clearInterval(timerInterval);
-        selectedAnswerForCurrentQ = null;
-        warningTriggered = false;
-
         const q = generatedQuestions[index];
-        questionBadge.textContent = q.badge;
-        progressText.innerHTML = `سؤال <span class="en-number">${index + 1}</span> من <span class="en-number">${generatedQuestions.length}</span>`;
-        questionTitle.textContent = q.title;
-        verseText.innerHTML = q.promptHtml;
+        if(!q) return;
 
-        optionsContainer.innerHTML = "";
-        q.options.forEach(opt => {
-            const btn = document.createElement("div");
-            btn.className = "option-card";
-            btn.innerHTML = `<span>${opt}</span> <i class="fa-regular fa-circle"></i>`;
-            btn.addEventListener("click", () => {
-                playBeep(600, 0.05);
-                handleAnswerSelection(btn, opt);
+        const badge = document.getElementById("question-badge");
+        const title = document.getElementById("question-title");
+        const verse = document.getElementById("verse-text");
+        const optionsContainer = document.getElementById("options-container");
+        const progressText = document.getElementById("progress-text");
+
+        if(badge) badge.textContent = q.badge;
+        if(title) title.textContent = q.title;
+        if(verse) verse.innerHTML = q.promptHtml;
+        if(progressText) progressText.textContent = `السؤال ${index + 1} من ${generatedQuestions.length}`;
+
+        if(optionsContainer) {
+            optionsContainer.innerHTML = "";
+            q.options.forEach(opt => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.textContent = opt;
+                btn.addEventListener("click", () => handleAnswer(opt, q, btn));
+                optionsContainer.appendChild(btn);
             });
-            optionsContainer.appendChild(btn);
-        });
-
-        if (timerToggle && timerToggle.checked) {
-            quizTimerDisplay.classList.remove("hidden", "timer-warning");
-            initialTime = parseInt(sCountInput.value) || 30;
-            timeLeft = initialTime;
-            timerSecondsSpan.textContent = timeLeft;
-
-            const halfTime = Math.floor(initialTime / 2);
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerSecondsSpan.textContent = timeLeft;
-
-                if (timeLeft <= halfTime && !warningTriggered) {
-                    warningTriggered = true;
-                    quizTimerDisplay.classList.add("timer-warning");
-                    playWarningSound();
-                }
-
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    playErrorSound();
-                    autoSubmitOnTimeout(q);
-                }
-            }, 1000);
-        } else {
-            if(quizTimerDisplay) quizTimerDisplay.classList.add("hidden");
         }
     }
 
-    function handleAnswerSelection(selectedBtn, selectedOption) {
-        const allOptions = optionsContainer.querySelectorAll(".option-card");
-        allOptions.forEach(b => {
-            b.classList.remove("selected");
-            b.querySelector("i").className = "fa-regular fa-circle";
-        });
-        selectedBtn.classList.add("selected");
-        selectedBtn.querySelector("i").className = "fa-solid fa-circle-dot";
-        selectedAnswerForCurrentQ = selectedOption;
-    }
+    function handleAnswer(selected, questionObj, btnElement) {
+        const allBtns = document.querySelectorAll(".option-btn");
+        allBtns.forEach(b => b.disabled = true);
 
-    function autoSubmitOnTimeout(q) {
+        const isCorrect = selected === questionObj.correctAnswer;
+
         userAnswersLog.push({
-            question: q,
-            userAnswer: "انتهى الوقت ولم تجب",
-            isCorrect: false
+            question: questionObj,
+            userAnswer: selected,
+            isCorrect: isCorrect
         });
-        proceedToNextOrFinish();
-    }
 
-    if(nextBtn) {
-        nextBtn.addEventListener("click", () => {
-            clearInterval(timerInterval);
-            const q = generatedQuestions[currentQuestionIndex];
-
-            if (selectedAnswerForCurrentQ !== null) {
-                const isCorrect = selectedAnswerForCurrentQ === q.correctAnswer;
-                if (isCorrect) userScore++;
-
-                userAnswersLog.push({
-                    question: q,
-                    userAnswer: selectedAnswerForCurrentQ,
-                    isCorrect: isCorrect
-                });
-            } else {
-                userAnswersLog.push({
-                    question: q,
-                    userAnswer: "لم تقم باختيار إجابة",
-                    isCorrect: false
-                });
-            }
-            proceedToNextOrFinish();
-        });
-    }
-
-    function proceedToNextOrFinish() {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < generatedQuestions.length) {
-            showQuestion(currentQuestionIndex);
+        if (isCorrect) {
+            btnElement.style.background = "#16a34a";
+            btnElement.style.color = "#fff";
+            userScore++;
+            playSuccessSound();
         } else {
-            finishQuiz();
+            btnElement.style.background = "#dc2626";
+            btnElement.style.color = "#fff";
+            playErrorSound();
+            allBtns.forEach(b => {
+                if (b.textContent === questionObj.correctAnswer) {
+                    b.style.background = "#16a34a";
+                    b.style.color = "#fff";
+                }
+            });
         }
+
+        setTimeout(() => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < generatedQuestions.length) {
+                showQuestion(currentQuestionIndex);
+            } else {
+                finishQuiz();
+            }
+        }, 1200);
     }
 
-    // --- إنهاء الاختبار وتنسيق النتائج ---
     function finishQuiz() {
-        clearInterval(timerInterval);
-        playSuccessSound();
-
-        step3.classList.add("hidden");
-        step4.classList.remove("hidden");
-
-        const total = generatedQuestions.length;
-        scoreText.textContent = `${userScore} / ${total}`;
-
-        const earnedPts = userScore;
-        userPoints += earnedPts;
-        if(earnedPointsSpan) earnedPointsSpan.textContent = earnedPts;
-
-        const durationMs = new Date() - quizStartTime;
-        const totalSecs = Math.floor(durationMs / 1000);
-        const mins = Math.floor(totalSecs / 60);
-        const secs = totalSecs % 60;
-        if(totalTimeSpentSpan) totalTimeSpentSpan.textContent = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-
-        quizHistory.push({
+        userPoints += userScore;
+        const newHistoryItem = {
             date: new Date().toLocaleDateString('ar-EG'),
             surahsCount: generatedQuestions.length,
-            score: `${userScore}/${total}`,
-            pts: earnedPts,
+            score: `${userScore}/${generatedQuestions.length}`,
+            pts: userScore,
             logs: userAnswersLog
-        });
+        };
+        quizHistory.push(newHistoryItem);
         saveUserData();
 
-        if (userScore === total) scoreMessage.textContent = "أداء ممتاز جداً ودرجة كاملة! 🎉";
-        else if (userScore >= total / 2) scoreMessage.textContent = "أحسنت! أداء جيد جداً. 👍";
-        else scoreMessage.textContent = "واصل المراجعة لتثبيت الحفظ. 🤍";
+        if(step3) step3.classList.add("hidden");
+        if(step4) step4.classList.remove("hidden");
 
-        if(errorsContainer) {
-            errorsContainer.innerHTML = "";
-            userAnswersLog.forEach((log, i) => {
-                const item = document.createElement("div");
-                item.style.marginBottom = "0.8rem";
-                item.style.padding = "0.8rem";
-                item.style.borderRadius = "8px";
-                item.style.background = log.isCorrect ? "rgba(22, 163, 74, 0.05)" : "rgba(220, 38, 38, 0.05)";
-                item.innerHTML = `
-                    <p><strong>س<span class="en-number">${i + 1}</span>: ${log.question.title}</strong></p>
-                    <p class="quran-text" style="font-size:1.1rem; margin: 4px 0;">${log.question.promptHtml}</p>
-                    <p>إجابتك: <span style="color: ${log.isCorrect ? 'green' : 'red'}; font-weight: bold;">${log.userAnswer}</span></p>
-                    ${!log.isCorrect ? `<p style="color: green; font-weight: bold;">الإجابة الصحيحة: ${log.question.correctAnswer}</p>` : ""}
-                `;
-                errorsContainer.appendChild(item);
-            });
-        }
+        const scoreText = document.getElementById("score-text");
+        const earnedPointsSpan = document.getElementById("earned-points");
+
+        if(scoreText) scoreText.textContent = `${userScore} / ${generatedQuestions.length}`;
+        if(earnedPointsSpan) earnedPointsSpan.textContent = userScore;
     }
 
-    if(toggleErrorsBtn) toggleErrorsBtn.addEventListener("click", () => errorsContainer.classList.toggle("hidden"));
-
+    const restartBtn = document.getElementById("restart-btn");
     if(restartBtn) {
         restartBtn.addEventListener("click", () => {
-            step4.classList.add("hidden");
-            startNewQuiz();
+            if(step4) step4.classList.add("hidden");
+            if(step2) step2.classList.remove("hidden");
         });
     }
 
+    const homeBtn = document.getElementById("home-btn");
     if(homeBtn) {
         homeBtn.addEventListener("click", () => {
-            step4.classList.add("hidden");
-            step2.classList.remove("hidden");
+            if(step4) step4.classList.add("hidden");
+            if(step1) step1.classList.remove("hidden");
         });
     }
 });
-// .....1
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('PWA Registered Successfully!'))
-            .catch(err => console.log('PWA Registration Failed: ', err));
-    });
-}

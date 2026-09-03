@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مُدَّكِر | منصة اختبارات القرآن الكريم</title>
+    <title>منصة مُدَّكِر  </title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -61,11 +61,11 @@
             <div id="onboarding-carousel">
                 <div class="onboarding-slide active" data-slide="1">
                     <div class="quran-quote">
-                        <p class="quran-text">"وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مَّدَّكِرٍ"</p>
+                        <p class="quran-text">"وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُدَّكِر"</p>
                         <span class="surah-ref">[سورة القمر: 17]</span>
                     </div>
                     <h1>منصة مراجعة القرآن الكريم</h1>
-                    <p>رفيقك الذكي لمراجعة القرآن الكريم وتثبيت الحفظ باختبارات تفاعلية ومؤثرات صوتية.</p>
+                    <p>رفيقك الذكي لمراجعة القرآن الكريم وتثبيت الحفظ باختبارات تفاعلية  .</p>
                 </div>
 
                 <div class="onboarding-slide" data-slide="2">
@@ -75,7 +75,7 @@
                             <i class="fa-solid fa-bullseye feature-icon"></i>
                             <div>
                                 <strong>تحديد النطاق:</strong>
-                                <p>اختر السور، الأجزاء، الأحزاب، أو الأرباع (بالرقم وبداية النص).</p>
+                                <p>اختر السور، الأجزاء، الأحزاب، أو الأرباع.</p>
                             </div>
                         </div>
                         <div class="feature-item">
@@ -101,8 +101,9 @@
                         </div>
 
                         <form id="login-form-box" class="hidden">
-                            <input type="text" id="user-name-input" placeholder="اسم المستخدم (للمزامنة)..." class="input-styled" required>
-                            <button type="submit" id="login-submit-btn" class="btn-primary">دخول والمزامنة</button>
+                            <input type="text" id="user-name-input" placeholder="اسم المستخدم..." class="input-styled" required>
+                            <input type="email" id="user-email-input" placeholder="الحساب (البريد الإلكتروني)..." class="input-styled" style="margin-top: 8px;" required>
+                            <button type="submit" id="login-submit-btn" class="btn-primary" style="margin-top: 10px;">دخول والمزامنة</button>
                         </form>
                     </div>
                 </div>
@@ -129,12 +130,12 @@
             <h2>⚙️ إعداد الاختبار</h2>
             
             <div class="form-group">
-                <label>📍 حدد نطاق الاختبار:</label>
+                <label> حدد نطاق الاختبار:</label>
                 <div class="scope-tabs">
-                    <button type="button" class="scope-tab active" data-scope="surahs">📖 السور</button>
-                    <button type="button" class="scope-tab" data-scope="juzs">🧩 الأجزاء</button>
-                    <button type="button" class="scope-tab" data-scope="ahzab">📚 الأحزاب</button>
-                    <button type="button" class="scope-tab" data-scope="quarters">⭐ الأرباع</button>
+                    <button type="button" class="scope-tab active" data-scope="surahs"> السور</button>
+                    <button type="button" class="scope-tab" data-scope="juzs"> الأجزاء</button>
+                    <button type="button" class="scope-tab" data-scope="ahzab"> الأحزاب</button>
+                    <button type="button" class="scope-tab" data-scope="quarters"> الأرباع</button>
                 </div>
                 <div id="scope-selection-container" class="items-grid">
                     <p class="loading-text">جاري تحميل البيانات...</p>
@@ -143,7 +144,7 @@
 
             <!-- الأسئلة الستة المعتمدة -->
             <div class="form-group">
-                <label>🎯 اختر أنواع الأسئلة (الأنواع الستة):</label>
+                <label> اختر أنواع الأسئلة :</label>
                 <div class="checkbox-grid">
                     <label class="checkbox-card">
                         <input type="checkbox" value="completion" class="quiz-type custom-checkbox" checked>
@@ -173,7 +174,7 @@
             </div>
 
             <div class="form-group">
-                <label for="questions-count">🔢 عدد الأسئلة المطلوب:</label>
+                <label for="questions-count"> عدد الأسئلة المطلوب:</label>
                 <div class="custom-number-wrapper">
                     <button type="button" class="num-btn num-minus" id="btn-minus-q"><i class="fa-solid fa-minus"></i></button>
                     <input type="number" id="questions-count" min="1" max="50" value="5" class="input-styled en-number custom-num-input" readonly>
@@ -183,7 +184,7 @@
 
             <div class="form-group">
                 <div class="difficulty-header">
-                    <label for="difficulty-slider">📊 مستوى الصعوبة:</label>
+                    <label for="difficulty-slider"> مستوى الصعوبة:</label>
                     <span id="difficulty-badge" class="diff-badge level-easy">سهل</span>
                 </div>
                 <div class="slider-wrapper">
@@ -209,7 +210,7 @@
             </div>
 
             <div class="ai-notice-box">
-                <p>⚠️ <strong>تنبيه هام:</strong> الأسئلة تُولد بدقة من النطاق المحدد.</p>
+                <p>⚠️ <strong>تنبيه هام:</strong> الأسئلة تُولد اليا اذا كان هنالك خطا ما يرجى التوا معنا.</p>
                 <button type="button" id="trigger-feedback-modal-btn" class="btn-feedback-trigger">
                     <i class="fa-solid fa-flag"></i> الإبلاغ عن ملاحظة أو تقديم اقتراح
                 </button>
@@ -259,14 +260,14 @@
                 </div>
 
                 <div class="points-earned-box">
-                    🏆 <strong>النقاط المكتسبة:</strong> +<span id="earned-points" class="en-number">0</span> نقطة (1 نقطة/إجابة صحيح)
+                    🏆 <strong>النقاط المكتسبة:</strong> +<span id="earned-points" class="en-number">0</span> 
                 </div>
 
                 <div class="time-spent-box">
                     ⏱️ <strong>الزمن الكلي المستغرق:</strong> <span id="total-time-spent" class="en-number">00:00</span>
                 </div>
 
-                <button id="toggle-errors-btn" class="btn-secondary">عرض التفاصيل والتصحيح 👁️</button>
+                <button id="toggle-errors-btn" class="btn-secondary">عرض التفاصيل والتصحيح </button>
                 
                 <div id="errors-container" class="errors-list hidden"></div>
 
@@ -332,7 +333,6 @@
                     <label for="feedback-details">التفاصيل والتوضيح:</label>
                     <textarea id="feedback-details" class="input-styled textarea-styled" rows="4" placeholder="اكتب ملاحظتك بالتفصيل..." required></textarea>
                 </div>
-
                 <div class="modal-actions">
                     <button type="button" id="cancel-feedback-btn" class="btn-secondary">إلغاء</button>
                     <button type="submit" class="btn-primary">إرسال</button>
@@ -340,6 +340,9 @@
             </form>
         </div>
     </div>
+<!-- جلب مكتبات Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
     <script src="app.js"></script>
 </body>
