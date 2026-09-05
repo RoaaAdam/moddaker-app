@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة مُدَّكِر  </title>
+    <title>منصة مُدَّكِر</title>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -65,7 +65,7 @@
                         <span class="surah-ref">[سورة القمر: 17]</span>
                     </div>
                     <h1>منصة مراجعة القرآن الكريم</h1>
-                    <p>رفيقك الذكي لمراجعة القرآن الكريم وتثبيت الحفظ باختبارات تفاعلية  .</p>
+                    <p>رفيقك الذكي لمراجعة القرآن الكريم وتثبيت الحفظ باختبارات تفاعلية.</p>
                 </div>
 
                 <div class="onboarding-slide" data-slide="2">
@@ -96,14 +96,14 @@
                         <div id="guest-mode-box">
                             <p>💡 <strong>أنت تعمل حالياً بوضع الزائر:</strong> يتم حفظ تقدمك محلياً.</p>
                             <button id="show-login-btn" class="btn-secondary-outline">
-                                <i class="fa-solid fa-user-plus"></i> تسجل أو تسجيل الدخول
+                                <i class="fa-solid fa-user-plus"></i> تسجيل أو تسجيل الدخول
                             </button>
                         </div>
 
-                        <form id="login-form-box" class="hidden">
+                        <form id="login-form-box" class="hidden" style="display: flex; flex-direction: column; gap: 10px;">
                             <input type="text" id="user-name-input" placeholder="اسم المستخدم..." class="input-styled" required>
-                            <input type="email" id="user-email-input" placeholder="الحساب (البريد الإلكتروني)..." class="input-styled" style="margin-top: 8px;" required>
-                            <button type="submit" id="login-submit-btn" class="btn-primary" style="margin-top: 10px;">دخول والمزامنة</button>
+                            <input type="email" id="user-email-input" placeholder="البريد الإلكتروني..." class="input-styled" required>
+                            <button type="submit" id="login-submit-btn" class="btn-primary" style="margin-top: 0;">دخول والمزامنة</button>
                         </form>
                     </div>
                 </div>
@@ -117,7 +117,7 @@
                     
                     <div class="carousel-actions">
                         <button id="skip-onboarding-btn" class="btn-text">تخطي</button>
-                        <button id="next-slide-btn" class="btn-primary">
+                        <button id="next-slide-btn" class="btn-primary" style="padding: 0.6rem 1.8rem; border-radius: 30px; font-size: 1rem; min-width: 130px; box-shadow: 0 4px 12px rgba(13, 92, 58, 0.3);">
                             التالي <i class="fa-solid fa-arrow-left arrow-icon"></i>
                         </button>
                     </div>
@@ -130,12 +130,12 @@
             <h2>⚙️ إعداد الاختبار</h2>
             
             <div class="form-group">
-                <label> حدد نطاق الاختبار:</label>
+                <label>حدد نطاق الاختبار:</label>
                 <div class="scope-tabs">
-                    <button type="button" class="scope-tab active" data-scope="surahs"> السور</button>
-                    <button type="button" class="scope-tab" data-scope="juzs"> الأجزاء</button>
-                    <button type="button" class="scope-tab" data-scope="ahzab"> الأحزاب</button>
-                    <button type="button" class="scope-tab" data-scope="quarters"> الأرباع</button>
+                    <button type="button" class="scope-tab active" data-scope="surahs">السور</button>
+                    <button type="button" class="scope-tab" data-scope="juzs">الأجزاء</button>
+                    <button type="button" class="scope-tab" data-scope="ahzab">الأحزاب</button>
+                    <button type="button" class="scope-tab" data-scope="quarters">الأرباع</button>
                 </div>
                 <div id="scope-selection-container" class="items-grid">
                     <p class="loading-text">جاري تحميل البيانات...</p>
@@ -144,7 +144,7 @@
 
             <!-- الأسئلة الستة المعتمدة -->
             <div class="form-group">
-                <label> اختر أنواع الأسئلة :</label>
+                <label>اختر أنواع الأسئلة:</label>
                 <div class="checkbox-grid">
                     <label class="checkbox-card">
                         <input type="checkbox" value="completion" class="quiz-type custom-checkbox" checked>
@@ -152,7 +152,7 @@
                     </label>
                     <label class="checkbox-card">
                         <input type="checkbox" value="missing_word" class="quiz-type custom-checkbox" checked>
-                        <span>2. الكلمة الناقصة في المنتصف</span>
+                        <span>2. الكلمة الناقصة</span>
                     </label>
                     <label class="checkbox-card">
                         <input type="checkbox" value="surah_name" class="quiz-type custom-checkbox" checked>
@@ -174,7 +174,7 @@
             </div>
 
             <div class="form-group">
-                <label for="questions-count"> عدد الأسئلة المطلوب:</label>
+                <label for="questions-count">عدد الأسئلة المطلوب:</label>
                 <div class="custom-number-wrapper">
                     <button type="button" class="num-btn num-minus" id="btn-minus-q"><i class="fa-solid fa-minus"></i></button>
                     <input type="number" id="questions-count" min="1" max="50" value="5" class="input-styled en-number custom-num-input" readonly>
@@ -184,7 +184,7 @@
 
             <div class="form-group">
                 <div class="difficulty-header">
-                    <label for="difficulty-slider"> مستوى الصعوبة:</label>
+                    <label for="difficulty-slider">مستوى الصعوبة:</label>
                     <span id="difficulty-badge" class="diff-badge level-easy">سهل</span>
                 </div>
                 <div class="slider-wrapper">
@@ -210,7 +210,7 @@
             </div>
 
             <div class="ai-notice-box">
-                <p>⚠️ <strong>تنبيه هام:</strong> الأسئلة تُولد اليا اذا كان هنالك خطا ما يرجى التوا معنا.</p>
+                <p>⚠️ <strong>تنبيه هام:</strong> الأسئلة تُولد آلياً، إذا كان هناك خطأ ما يرجى التواصل معنا.</p>
                 <button type="button" id="trigger-feedback-modal-btn" class="btn-feedback-trigger">
                     <i class="fa-solid fa-flag"></i> الإبلاغ عن ملاحظة أو تقديم اقتراح
                 </button>
@@ -267,7 +267,7 @@
                     ⏱️ <strong>الزمن الكلي المستغرق:</strong> <span id="total-time-spent" class="en-number">00:00</span>
                 </div>
 
-                <button id="toggle-errors-btn" class="btn-secondary">عرض التفاصيل والتصحيح </button>
+                <button id="toggle-errors-btn" class="btn-secondary">عرض التفاصيل والتصحيح</button>
                 
                 <div id="errors-container" class="errors-list hidden"></div>
 
@@ -284,7 +284,7 @@
 
     </main>
 
-    <!-- نافذة سجل الاختبارات المزودة بإمكانية المسح والتفاصيل [؟] -->
+    <!-- نافذة سجل الاختبارات -->
     <div id="history-modal" class="modal-backdrop hidden">
         <div class="modal-card">
             <div class="modal-header">
@@ -292,7 +292,7 @@
                 <button id="close-history-modal-btn" class="close-btn">&times;</button>
             </div>
             <div id="history-list-container" class="modal-body history-box"></div>
-            <div class="modal-footer-actions">
+            <div id="clear-history-wrapper" class="modal-footer-actions">
                 <button id="clear-history-btn" class="btn-danger-outline">
                     <i class="fa-solid fa-trash-can"></i> مسح السجل بالكامل
                 </button>
@@ -300,7 +300,7 @@
         </div>
     </div>
 
-    <!-- نافذة تفاصيل الاختبار السلسة [؟] -->
+    <!-- نافذة تفاصيل الاختبار -->
     <div id="details-modal" class="modal-backdrop hidden">
         <div class="modal-card">
             <div class="modal-header">
@@ -340,10 +340,12 @@
             </form>
         </div>
     </div>
-<!-- جلب مكتبات Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
+    <!-- مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <!-- ملف التطبيق -->
     <script src="app.js"></script>
 </body>
 </html>

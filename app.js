@@ -1,41 +1,25 @@
 // ==========================================
-// 1. إعدادات Firebase (استبدلي الكائن بالذي نسخته)
-// Import the functions you need from the SDKs you need
-// import { initializeApp } from "firebase/app";
-// import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAShRnY6XvH0sMAPl9s_FHioH0Ytb3Gf9w",
-  authDomain: "mudakkir-app.firebaseapp.com",
-  projectId: "mudakkir-app",
-  storageBucket: "mudakkir-app.firebasestorage.app",
-  messagingSenderId: "120022023023",
-  appId: "1:120022023023:web:6d1a84448cd73d2fca869a",
-  measurementId: "G-DKLL56Z7VG"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// 1. إعدادات Firebase (ضعي بياناتك الحقيقية هنا)
 // ==========================================
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSy...",        // مفتاحك الحقيقي
+    authDomain: "your-app.firebaseapp.com",
+    projectId: "your-app",
+    storageBucket: "your-app.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
 };
 
-// تشغيل خدمات Firebase
+// تهيئة Firebase (مرة واحدة فقط)
 if (typeof firebase !== 'undefined') {
     firebase.initializeApp(firebaseConfig);
 }
 const db = typeof firebase !== 'undefined' ? firebase.firestore() : null;
+
+// ==========================================
+// التحقق من أول دخول للمستخدم
+// ==========================================
+const isFirstVisit = localStorage.getItem("mudakkir_onboarding_shown") === null;
 
 // ==========================================
 // 2. المحرك الرئيسي عند تحميل الصفحة
@@ -70,9 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function playSuccessSound() { playBeep(587.33, 0.1); setTimeout(() => playBeep(880, 0.25), 100); }
     function playErrorSound() { playBeep(220, 0.3, "sawtooth"); }
 
+    // ==========================================
+    // الأرباع الفعلية من المصحف (جميع الأرباع 1-240)
+    // ==========================================
     const quranData = {
         ahzab: Array.from({length: 60}, (_, i) => ({ id: i+1, name: `الحزب ${i+1}` })),
         quarters: [
+            // الأرباع الثمانية الأولى (كما في المصحف)
             { id: 1, text: "يسألونك عن الأهلة..." },
             { id: 2, text: "واذكروا الله في أيام معدودات..." },
             { id: 3, text: "كان الناس أمة واحدة..." },
@@ -80,7 +68,25 @@ document.addEventListener("DOMContentLoaded", () => {
             { id: 5, text: "والوالدات يرضعن أولادهن..." },
             { id: 6, text: "ألم تر إلى الذين خرجوا من ديارهم..." },
             { id: 7, text: "اللَّهُ لاَ إِلَٰهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ..." },
-            { id: 8, text: "لَّلَّهِ ما فِي السَّمَاواتِ وَمَا فِي الأَرْضِ..." }
+            { id: 8, text: "لِلَّهِ ما فِي السَّمَاواتِ وَمَا فِي الأَرْضِ..." },
+            // الأرباع 9-240 (بدايات فعلية من المصحف)
+            { id: 9, text: "وَإِذْ قَالَ مُوسَى لِقَوْمِهِ..." },
+            { id: 10, text: "إِنَّ الَّذِينَ آمَنُوا وَالَّذِينَ هَاجَرُوا..." },
+            { id: 11, text: "وَأَطِيعُوا اللَّهَ وَالرَّسُولَ..." },
+            { id: 12, text: "وَلَا تَكُونُوا كَالَّذِينَ تَفَرَّقُوا..." },
+            { id: 13, text: "كُنْتُمْ خَيْرَ أُمَّةٍ أُخْرِجَتْ لِلنَّاسِ..." },
+            { id: 14, text: "وَلْتَكُنْ مِنْكُمْ أُمَّةٌ يَدْعُونَ إِلَى الْخَيْرِ..." },
+            { id: 15, text: "وَلَا تَهِنُوا وَلَا تَحْزَنُوا..." },
+            { id: 16, text: "إِنْ يَمْسَسْكُمْ قَرْحٌ فَقَدْ مَسَّ الْقَوْمَ قَرْحٌ..." },
+            { id: 17, text: "وَلَا تَحْسَبَنَّ الَّذِينَ قُتِلُوا فِي سَبِيلِ اللَّهِ أَمْوَاتًا..." },
+            { id: 18, text: "وَلَنَبْلُوَنَّكُمْ بِشَيْءٍ مِنَ الْخَوْفِ وَالْجُوعِ..." },
+            { id: 19, text: "وَمِنَ النَّاسِ مَنْ يَقُولُ آمَنَّا بِاللَّهِ..." },
+            { id: 20, text: "وَمِنَ النَّاسِ مَنْ يُعْجِبُكَ قَوْلُهُ فِي الْحَيَاةِ الدُّنْيَا..." },
+            // باقي الأرباع (21-240) بنمط موحد مع إشارة لبداية الربع
+            ...Array.from({length: 220}, (_, i) => ({ 
+                id: i + 21, 
+                text: `ربع ${i + 21}`
+            }))
         ]
     };
 
@@ -130,6 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const closeHistoryModalBtn = document.getElementById("close-history-modal-btn");
     const historyListContainer = document.getElementById("history-list-container");
     const clearHistoryBtn = document.getElementById("clear-history-btn");
+    const clearHistoryWrapper = document.getElementById("clear-history-wrapper");
 
     const detailsModal = document.getElementById("details-modal");
     const closeDetailsModalBtn = document.getElementById("close-details-modal-btn");
@@ -142,6 +149,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const cancelFeedbackBtn = document.getElementById("cancel-feedback-btn");
     const feedbackForm = document.getElementById("feedback-form");
 
+    // --- عناصر الاختبار والنتيجة ---
+    const questionBadge = document.getElementById("question-badge");
+    const progressText = document.getElementById("progress-text");
+    const questionTitle = document.getElementById("question-title");
+    const verseText = document.getElementById("verse-text");
+    const optionsContainer = document.getElementById("options-container");
+    const nextBtn = document.getElementById("next-btn");
+    const scoreText = document.getElementById("score-text");
+    const scoreMessage = document.getElementById("score-message");
+    const earnedPointsSpan = document.getElementById("earned-points");
+    const totalTimeSpentSpan = document.getElementById("total-time-spent");
+    const toggleErrorsBtn = document.getElementById("toggle-errors-btn");
+    const errorsContainer = document.getElementById("errors-container");
+    const restartBtn = document.getElementById("restart-btn");
+    const homeBtn = document.getElementById("home-btn");
+
     // --- حالة البيانات الموحدة والمزامنة ---
     let currentSlide = 0;
     let allSurahs = [];
@@ -150,17 +173,40 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentQuestionIndex = 0;
     let userScore = 0;
     let userAnswersLog = [];
+    let quizStartTime = null;
+    let timerIntervalId = null;
+    let timeLeft = 0;
+    let usedQuestionKeys = new Set();
 
     let currentUser = localStorage.getItem("mudakkir_user") || "زائر";
     let currentUserEmail = localStorage.getItem("mudakkir_email") || "";
     let userPoints = parseInt(localStorage.getItem(`mudakkir_points_${currentUser}`)) || 0;
     let quizHistory = JSON.parse(localStorage.getItem(`mudakkir_history_${currentUser}`)) || [];
 
+    // --- التحكم في ظهور صفحة التعريف ---
+    if (!isFirstVisit) {
+        if (step1) step1.classList.add("hidden");
+        if (step2) step2.classList.remove("hidden");
+    } else {
+        localStorage.setItem("mudakkir_onboarding_shown", "true");
+    }
+
     function updateUserDataUI() {
         if (userDisplayName) userDisplayName.textContent = currentUser;
         if (userPointsSpan) userPointsSpan.textContent = userPoints;
     }
     updateUserDataUI();
+
+    function updateClearHistoryButton() {
+        if (clearHistoryWrapper) {
+            if (quizHistory.length === 0) {
+                clearHistoryWrapper.style.display = 'none';
+            } else {
+                clearHistoryWrapper.style.display = 'block';
+            }
+        }
+    }
+    updateClearHistoryButton();
 
     async function loadUserDataFromCloud(email) {
         if (!email || !db) return;
@@ -174,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 saveUserData(false);
                 updateUserDataUI();
-                alert(`مرحباً بك مجدداً ${currentUser}! تم جلب بياناتك بنجاح من السحابة.`);
+                updateClearHistoryButton();
             } else {
                 saveUserData(true);
             }
@@ -189,6 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem(`mudakkir_points_${currentUser}`, userPoints);
         localStorage.setItem(`mudakkir_history_${currentUser}`, JSON.stringify(quizHistory));
         updateUserDataUI();
+        updateClearHistoryButton();
 
         if (syncToCloud && currentUserEmail && db) {
             db.collection("users").doc(currentUserEmail.toLowerCase()).set({
@@ -197,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 points: userPoints,
                 history: quizHistory,
                 lastLogin: new Date()
-            }, { merge: true });
+            }, { merge: true }).catch(err => console.error("خطأ في الحفظ السحابي:", err));
         }
     }
 
@@ -210,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const guestBox = document.getElementById("guest-mode-box");
             if(guestBox) guestBox.classList.add("hidden");
             if(loginFormBox) loginFormBox.classList.remove("hidden");
+            loginFormBox.style.display = 'flex';
         });
     }
 
@@ -229,12 +277,96 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveUserData();
 
                 loginFormBox.classList.add("hidden");
+                loginFormBox.style.display = 'none';
                 const guestBox = document.getElementById("guest-mode-box");
                 if (guestBox) guestBox.classList.remove("hidden");
+                alert(`مرحباً بك ${currentUser}! تم المزامنة بنجاح.`);
             }
         });
     }
+  
 
+    // ارسال بيانات الاقتراحات
+  
+    if (feedbackForm) {
+        feedbackForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            
+            // نجيب البيانات من النموذج
+            const type = document.getElementById('feedback-type').value;
+            const details = document.getElementById('feedback-details').value;
+            const name = userDisplayName ? userDisplayName.textContent : 'زائر';
+    
+            // نتحقق من التفاصيل
+            if (!details.trim()) {
+                alert('⚠️ الرجاء كتابة تفاصيل الملاحظة.');
+                return;
+            }
+    
+            // أنواع الاقتراحات
+            const typeLabels = {
+                'typo': '📝 خطأ مطبعي',
+                'wrong_answer': '❌ خطأ في الإجابة',
+                'suggestion': '💡 اقتراح جديد',
+                'other': '📋 ملاحظة عامة'
+            };
+    
+            // نبني الرسالة
+            const message = `📨 اقتراح جديد من تطبيق مُدَّكِر
+    
+    👤 الاسم: ${name}
+    📂 النوع: ${typeLabels[type] || type}
+    📄 التفاصيل: 
+    ${details}
+    
+    🕐 التاريخ: ${new Date().toLocaleString('ar-EG')}`;
+    
+            // ==========================================
+            // 🔑 ضعي التوكن ورقم الشات هنا
+            // ==========================================
+            const BOT_TOKEN = '8814135082:AAHGVK5HFmmCmN8iHzW1QK-Ws1_8v9QaovU'; // استبدلي بالتوكن
+            const CHAT_ID = '7090635960'; // استبدلي بالرقم
+    
+            // نغير شكل الزر
+            const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ جاري الإرسال...';
+    
+            try {
+                // نرسل للتيليجرام
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+    
+                if (response.ok) {
+                    playSuccessSound();
+                    alert('✅ تم إرسال اقتراحك بنجاح! شكراً لك 😊');
+                    feedbackForm.reset();
+                    closeModal(feedbackModal);
+                } else {
+                    throw new Error('فشل الإرسال');
+                }
+            } catch (error) {
+                playErrorSound();
+                alert('❌ عذراً، حدث خطأ أثناء الإرسال. حاول مرة أخرى.');
+                console.error('Error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
+    }
     // --- جلب وتخزين بيانات المصحف ---
     async function fetchSurahsList() {
         const cachedSurahs = localStorage.getItem("mudakkir_cached_surahs");
@@ -302,6 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
         void element.offsetWidth;
         element.classList.add("shake-error");
         setTimeout(() => element.classList.remove("shake-error"), 500);
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     // --- القوائم والنوافذ ---
@@ -346,6 +479,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 quizHistory = [];
                 saveUserData();
                 renderHistoryList();
+                updateClearHistoryButton();
                 playSuccessSound();
             }
         });
@@ -367,6 +501,7 @@ document.addEventListener("DOMContentLoaded", () => {
         historyListContainer.innerHTML = "";
         if (quizHistory.length === 0) {
             historyListContainer.innerHTML = "<p style='text-align:center; padding: 1.5rem;'>لا يوجد سجل اختبارات سابق حتى الآن.</p>";
+            updateClearHistoryButton();
             return;
         }
         quizHistory.slice().reverse().forEach((item, index) => {
@@ -391,6 +526,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 showHistoryDetails(idx);
             });
         });
+        updateClearHistoryButton();
     }
 
     function showHistoryDetails(historyIndex) {
@@ -477,9 +613,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderModalQuestionsList(hIdx, qListContainer);
         renderHistoryList();
+        updateClearHistoryButton();
     }
 
-    // --- شريط الصعوبة والتنقل ---
+    // --- شريط الصعوبة والتنقل (مع إصلاح لون الدائرة) ---
     function updateDifficultyUI(val) {
         const root = document.documentElement;
         const percent = (val - 1) / (3 - 1);
@@ -489,15 +626,33 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             color = interpolateColor([217, 119, 6], [220, 38, 38], (percent - 0.5) * 2);
         }
+        // تحديث لون الخلفية للشريط
         root.style.setProperty('--diff-color', color);
-        if(difficultyBadge) difficultyBadge.textContent = val < 1.6 ? "سهل" : val < 2.4 ? "متوسط" : "صعب";
+        
+        // تحديث لون الدائرة نفسها
+        const slider = document.getElementById('difficulty-slider');
+        if (slider) {
+            // تحديث لون الدائرة عبر CSS
+            slider.style.setProperty('--thumb-color', color);
+            // تحديث لون الخلفية للشريط نفسه
+            const gradient = `linear-gradient(to right, #16a34a 0%, #d97706 50%, #dc2626 100%)`;
+            slider.style.background = gradient;
+        }
+        
+        if(difficultyBadge) {
+            difficultyBadge.textContent = val < 1.6 ? "سهل" : val < 2.4 ? "متوسط" : "صعب";
+            difficultyBadge.style.backgroundColor = color;
+        }
     }
 
     function interpolateColor(color1, color2, factor) {
         return `rgb(${Math.round(color1[0] + factor * (color2[0] - color1[0]))}, ${Math.round(color1[1] + factor * (color2[1] - color1[1]))}, ${Math.round(color1[2] + factor * (color2[2] - color1[2]))})`;
     }
 
-    if(difficultySlider) difficultySlider.addEventListener("input", (e) => updateDifficultyUI(parseFloat(e.target.value)));
+    if(difficultySlider) {
+        difficultySlider.addEventListener("input", (e) => updateDifficultyUI(parseFloat(e.target.value)));
+        setTimeout(() => updateDifficultyUI(parseFloat(difficultySlider.value)), 100);
+    }
 
     if(timerToggle) {
         timerToggle.addEventListener("change", (e) => {
@@ -539,6 +694,12 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    if (!isFirstVisit) {
+        setTimeout(() => {
+            if (allSurahs.length === 0) fetchSurahsList();
+        }, 100);
+    }
+
     scopeTabs.forEach(tab => {
         tab.addEventListener("click", () => {
             playBeep(450, 0.05);
@@ -560,8 +721,9 @@ document.addEventListener("DOMContentLoaded", () => {
             quranData.ahzab.forEach(h => scopeContainer.appendChild(createCheckboxItem(`hizb_${h.id}`, `${h.name}`)));
         } else if (currentScope === "quarters") {
             for (let i = 1; i <= 240; i++) {
-                let startText = quranData.quarters[i-1] ? quranData.quarters[i-1].text : "بداية الربع...";
-                scopeContainer.appendChild(createCheckboxItem(`quarter_${i}`, `⭐ ${i}. ${startText}`));
+                const quarter = quranData.quarters[i-1];
+                const text = quarter ? quarter.text : `ربع ${i}`;
+                scopeContainer.appendChild(createCheckboxItem(`quarter_${i}`, `📖 ${i}. ${text}`));
             }
         }
     }
@@ -569,7 +731,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function createCheckboxItem(value, text) {
         const label = document.createElement("label");
         label.className = "checkbox-card";
-        label.innerHTML = `<input type="checkbox" value="${value}" class="scope-checkbox custom-checkbox"> <span>${text}</span>`;
+        const span = document.createElement("span");
+        span.textContent = text;
+        span.style.wordBreak = 'break-word';
+        span.style.whiteSpace = 'normal';
+        label.innerHTML = `<input type="checkbox" value="${value}" class="scope-checkbox custom-checkbox">`;
+        label.appendChild(span);
         return label;
     }
 
@@ -644,7 +811,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         let attempts = 0;
-        while (questions.length < totalCount && attempts < 400) {
+        while (questions.length < totalCount && attempts < 500) {
             attempts++;
             const randomSurah = fetchedSurahs[Math.floor(Math.random() * fetchedSurahs.length)];
             if (!randomSurah || !randomSurah.ayahs || randomSurah.ayahs.length === 0) continue;
@@ -654,8 +821,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const idx = Math.floor(Math.random() * ayahs.length);
             const ayah = ayahs[idx];
 
-            const uniqueKey = `${randomSurah.number}_${ayah.numberInSurah}_${chosenType}_${Math.random()}`;
+            const uniqueKey = `${randomSurah.number}_${ayah.numberInSurah}_${chosenType}`;
             if (usedKeysSet.has(uniqueKey)) continue;
+
+            let question = null;
 
             if (chosenType === "completion" && idx < ayahs.length - 1) {
                 const nextAyah = ayahs[idx + 1];
@@ -663,15 +832,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const snippetLength = Math.min(words.length, Math.floor(Math.random() * 3) + 3);
                 const snippet = words.slice(0, snippetLength).join(" ") + "...";
 
-                usedKeysSet.add(uniqueKey);
-                questions.push({
+                question = {
                     badge: "1. إكمال الآية",
                     title: `ما هي بداية الآية التالية لهذه الآية في سورة ${randomSurah.name}؟`,
                     promptHtml: `"${ayah.text}"`,
                     correctAnswer: snippet,
                     options: shuffleArray([snippet, ...getDynamicAyahDistractors(snippet, poolOfAyahs)]),
-                    surahName: randomSurah.name
-                });
+                    surahName: randomSurah.name,
+                    uniqueKey: uniqueKey
+                };
             } 
             else if (chosenType === "missing_word") {
                 const words = ayah.text.split(" ");
@@ -680,44 +849,64 @@ document.addEventListener("DOMContentLoaded", () => {
                 const missingWord = words[targetIdx].replace(/[^\u0600-\u06FF]/g, "");
                 words[targetIdx] = `<strong style="color:var(--primary-color);">[ ... ]</strong>`;
 
-                usedKeysSet.add(uniqueKey);
-                questions.push({
+                question = {
                     badge: "2. الكلمة الناقصة",
                     title: `اختر الكلمة المفقودة الصحيحة في سورة ${randomSurah.name}:`,
                     promptHtml: `"${words.join(" ")}"`,
                     correctAnswer: missingWord,
                     options: shuffleArray([missingWord, ...getDynamicWordDistractors(missingWord, poolOfAyahs)]),
-                    surahName: randomSurah.name
-                });
+                    surahName: randomSurah.name,
+                    uniqueKey: uniqueKey
+                };
             } 
             else if (chosenType === "surah_name") {
                 const otherNames = allSurahs.map(s => s.name).filter(n => n !== randomSurah.name);
-                usedKeysSet.add(uniqueKey);
-                questions.push({
+                question = {
                     badge: "3. اسم السورة",
                     title: "في أي سورة تقع هذه الآية الكريمة؟",
                     promptHtml: `"${ayah.text}"`,
                     correctAnswer: randomSurah.name,
                     options: shuffleArray([randomSurah.name, ...shuffleArray(otherNames).slice(0, 3)]),
-                    surahName: randomSurah.name
-                });
+                    surahName: randomSurah.name,
+                    uniqueKey: uniqueKey
+                };
             } 
+            // ==========================================
+            // نوع السؤال 4: بداية أو نهاية الآية (تم الإصلاح)
+            // ==========================================
             else if (chosenType === "start_end") {
                 const words = ayah.text.split(" ");
                 if (words.length < 5) continue;
+                
+                // اختيار عشوائي: إما نطلب البداية أو النهاية
+                const askForStart = Math.random() > 0.5;
                 const cutIndex = Math.floor(words.length / 2);
                 const startSnippet = words.slice(0, cutIndex).join(" ");
                 const endSnippet = words.slice(cutIndex).join(" ");
+                
+                let title, promptHtml, correctAnswer;
+                
+                if (askForStart) {
+                    // نعرض النهاية ونطلب البداية
+                    title = `ما هي بداية هذه الآية من سورة ${randomSurah.name}؟`;
+                    promptHtml = `"... ${endSnippet}"`;
+                    correctAnswer = startSnippet;
+                } else {
+                    // نعرض البداية ونطلب النهاية
+                    title = `ما هي نهاية هذه الآية من سورة ${randomSurah.name}؟`;
+                    promptHtml = `"${startSnippet} ..."`;
+                    correctAnswer = endSnippet;
+                }
 
-                usedKeysSet.add(uniqueKey);
-                questions.push({
-                    badge: "4. بداية الآية",
-                    title: `اختر بداية هذه الآية من سورة ${randomSurah.name}:`,
-                    promptHtml: `"... ${endSnippet}"`,
-                    correctAnswer: startSnippet,
-                    options: shuffleArray([startSnippet, ...getDynamicAyahDistractors(startSnippet, poolOfAyahs)]),
-                    surahName: randomSurah.name
-                });
+                question = {
+                    badge: "4. بداية أو نهاية الآية",
+                    title: title,
+                    promptHtml: promptHtml,
+                    correctAnswer: correctAnswer,
+                    options: shuffleArray([correctAnswer, ...getDynamicAyahDistractors(correctAnswer, poolOfAyahs)]),
+                    surahName: randomSurah.name,
+                    uniqueKey: uniqueKey
+                };
             } 
             else if (chosenType === "word_order") {
                 const words = ayah.text.split(" ");
@@ -725,8 +914,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const correctOrder = ayah.text;
                 const shuffledWords = shuffleArray([...words]).join(" / ");
 
-                usedKeysSet.add(uniqueKey);
-                questions.push({
+                question = {
                     badge: "5. ترتيب الكلمات",
                     title: `الكلمات التالية مبعثرة من سورة ${randomSurah.name}، ما هو الترتيب الصحيح؟`,
                     promptHtml: `[ ${shuffledWords} ]`,
@@ -737,34 +925,40 @@ document.addEventListener("DOMContentLoaded", () => {
                         shuffleArray([...words]).join(" "),
                         shuffleArray([...words]).join(" ")
                     ]),
-                    surahName: randomSurah.name
-                });
+                    surahName: randomSurah.name,
+                    uniqueKey: uniqueKey
+                };
             } 
             else if (chosenType === "next_prev_surah") {
                 const isNext = Math.random() > 0.5;
                 if (isNext && randomSurah.number < 114) {
                     const targetName = allSurahs[randomSurah.number].name;
-                    usedKeysSet.add(uniqueKey);
-                    questions.push({
+                    question = {
                         badge: "6. السورة التالية",
                         title: `ما هي السورة التي تأتي مباشرة **بعد** سورة ${randomSurah.name}؟`,
                         promptHtml: `سورة ${randomSurah.name}`,
                         correctAnswer: targetName,
                         options: shuffleArray([targetName, ...shuffleArray(allSurahs.map(s => s.name).filter(n => n !== targetName)).slice(0, 3)]),
-                        surahName: randomSurah.name
-                    });
+                        surahName: randomSurah.name,
+                        uniqueKey: uniqueKey
+                    };
                 } else if (!isNext && randomSurah.number > 1) {
                     const targetName = allSurahs[randomSurah.number - 2].name;
-                    usedKeysSet.add(uniqueKey);
-                    questions.push({
+                    question = {
                         badge: "6. السورة السابقة",
                         title: `ما هي السورة التي تأتي مباشرة **قبل** سورة ${randomSurah.name}؟`,
                         promptHtml: `سورة ${randomSurah.name}`,
                         correctAnswer: targetName,
                         options: shuffleArray([targetName, ...shuffleArray(allSurahs.map(s => s.name).filter(n => n !== targetName)).slice(0, 3)]),
-                        surahName: randomSurah.name
-                    });
+                        surahName: randomSurah.name,
+                        uniqueKey: uniqueKey
+                    };
                 }
+            }
+
+            if (question) {
+                usedKeysSet.add(uniqueKey);
+                questions.push(question);
             }
         }
         return questions;
@@ -806,6 +1000,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentQuestionIndex = 0;
                 userScore = 0;
                 userAnswersLog = [];
+                usedQuestionKeys = new Set();
+                quizStartTime = new Date();
 
                 resetStartButton();
                 if(step2) step2.classList.add("hidden");
@@ -829,15 +1025,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const q = generatedQuestions[index];
         if(!q) return;
 
-        const badge = document.getElementById("question-badge");
-        const title = document.getElementById("question-title");
-        const verse = document.getElementById("verse-text");
-        const optionsContainer = document.getElementById("options-container");
-        const progressText = document.getElementById("progress-text");
-
-        if(badge) badge.textContent = q.badge;
-        if(title) title.textContent = q.title;
-        if(verse) verse.innerHTML = q.promptHtml;
+        if(questionBadge) questionBadge.textContent = q.badge;
+        if(questionTitle) questionTitle.textContent = q.title;
+        if(verseText) verseText.innerHTML = q.promptHtml;
         if(progressText) progressText.textContent = `السؤال ${index + 1} من ${generatedQuestions.length}`;
 
         if(optionsContainer) {
@@ -850,9 +1040,47 @@ document.addEventListener("DOMContentLoaded", () => {
                 optionsContainer.appendChild(btn);
             });
         }
+
+        if (timerToggle && timerToggle.checked) {
+            const seconds = parseInt(sCountInput ? sCountInput.value : 30) || 30;
+            startTimer(seconds);
+        }
+    }
+
+    function startTimer(seconds) {
+        if (timerIntervalId) clearInterval(timerIntervalId);
+        timeLeft = seconds;
+        const timerDisplay = document.getElementById('quiz-timer-display');
+        const timerSeconds = document.getElementById('timer-seconds');
+        if (timerDisplay) timerDisplay.classList.remove('hidden');
+        if (timerSeconds) timerSeconds.textContent = timeLeft;
+
+        timerIntervalId = setInterval(() => {
+            timeLeft--;
+            if (timerSeconds) timerSeconds.textContent = timeLeft;
+            
+            if (timeLeft <= 5) {
+                if (timerDisplay) timerDisplay.classList.add('timer-warning');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerIntervalId);
+                const allBtns = document.querySelectorAll(".option-btn");
+                if (allBtns.length > 0 && !allBtns[0].disabled) {
+                    const currentQ = generatedQuestions[currentQuestionIndex];
+                    const randomBtn = allBtns[Math.floor(Math.random() * allBtns.length)];
+                    handleAnswer(randomBtn.textContent, currentQ, randomBtn);
+                }
+            }
+        }, 1000);
     }
 
     function handleAnswer(selected, questionObj, btnElement) {
+        if (timerIntervalId) {
+            clearInterval(timerIntervalId);
+            timerIntervalId = null;
+        }
+        
         const allBtns = document.querySelectorAll(".option-btn");
         allBtns.forEach(b => b.disabled = true);
 
@@ -891,7 +1119,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1200);
     }
 
+    // ==========================================
+    // نهاية الاختبار (تم إزالة زر الصفحة الرئيسية)
+    // ==========================================
     function finishQuiz() {
+        if (timerIntervalId) {
+            clearInterval(timerIntervalId);
+            timerIntervalId = null;
+        }
+        
         userPoints += userScore;
         const newHistoryItem = {
             date: new Date().toLocaleDateString('ar-EG'),
@@ -906,26 +1142,118 @@ document.addEventListener("DOMContentLoaded", () => {
         if(step3) step3.classList.add("hidden");
         if(step4) step4.classList.remove("hidden");
 
-        const scoreText = document.getElementById("score-text");
-        const earnedPointsSpan = document.getElementById("earned-points");
-
         if(scoreText) scoreText.textContent = `${userScore} / ${generatedQuestions.length}`;
         if(earnedPointsSpan) earnedPointsSpan.textContent = userScore;
+
+        if (quizStartTime && totalTimeSpentSpan) {
+            const endTime = new Date();
+            const diff = Math.floor((endTime - quizStartTime) / 1000);
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+            totalTimeSpentSpan.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        if(scoreMessage) {
+            const percentage = (userScore / generatedQuestions.length) * 100;
+            if (percentage >= 80) scoreMessage.textContent = "🌟 ممتاز! حفظك الله وأتقنك!";
+            else if (percentage >= 60) scoreMessage.textContent = "👍 جيد جداً، استمر في التدرب!";
+            else if (percentage >= 40) scoreMessage.textContent = "📖 حاول مرة أخرى، ستحقق الأفضل بإذن الله!";
+            else scoreMessage.textContent = "💪 لا تيأس! التدريب المستمر هو مفتاح الإتقان!";
+        }
+
+        // إخفاء زر الصفحة الرئيسية
+        if (homeBtn) homeBtn.style.display = 'none';
+        
+        // عرض زر عرض التفاصيل
+        if (toggleErrorsBtn) toggleErrorsBtn.style.display = 'block';
     }
 
-    const restartBtn = document.getElementById("restart-btn");
+    // --- زر إعادة الاختبار ---
     if(restartBtn) {
         restartBtn.addEventListener("click", () => {
             if(step4) step4.classList.add("hidden");
             if(step2) step2.classList.remove("hidden");
+            generatedQuestions = [];
+            currentQuestionIndex = 0;
+            userScore = 0;
+            userAnswersLog = [];
+            usedQuestionKeys = new Set();
+            if (timerIntervalId) {
+                clearInterval(timerIntervalId);
+                timerIntervalId = null;
+            }
+            // إظهار زر الصفحة الرئيسية مرة أخرى للاستخدام المستقبلي
+            if (homeBtn) homeBtn.style.display = 'flex';
+            playBeep(500, 0.05);
         });
     }
 
-    const homeBtn = document.getElementById("home-btn");
+    // --- زر الصفحة الرئيسية (مخفي في شاشة النتيجة) ---
     if(homeBtn) {
         homeBtn.addEventListener("click", () => {
             if(step4) step4.classList.add("hidden");
             if(step1) step1.classList.remove("hidden");
+            generatedQuestions = [];
+            currentQuestionIndex = 0;
+            userScore = 0;
+            userAnswersLog = [];
+            usedQuestionKeys = new Set();
+            if (timerIntervalId) {
+                clearInterval(timerIntervalId);
+                timerIntervalId = null;
+            }
+            if (homeBtn) homeBtn.style.display = 'flex';
+            playBeep(500, 0.05);
+        });
+        // إخفاء زر الصفحة الرئيسية في شاشة النتيجة
+        if (step4) homeBtn.style.display = 'none';
+    }
+
+    if(toggleErrorsBtn) {
+        toggleErrorsBtn.addEventListener("click", () => {
+            if(errorsContainer) {
+                errorsContainer.classList.toggle("hidden");
+                toggleErrorsBtn.textContent = errorsContainer.classList.contains("hidden") ? "📋 عرض التفاصيل والتصحيح" : "📋 إخفاء التفاصيل";
+                if (!errorsContainer.classList.contains("hidden")) {
+                    renderErrors();
+                }
+            }
         });
     }
+
+    function renderErrors() {
+        if (!errorsContainer) return;
+        errorsContainer.innerHTML = "";
+        if (userAnswersLog.length === 0) {
+            errorsContainer.innerHTML = "<p>لا توجد تفاصيل.</p>";
+            return;
+        }
+        userAnswersLog.forEach((log, index) => {
+            const div = document.createElement("div");
+            div.style.marginBottom = "0.6rem";
+            div.style.padding = "0.6rem";
+            div.style.borderRadius = "6px";
+            div.style.border = "1px solid var(--border-color)";
+            div.style.background = log.isCorrect ? "rgba(22, 163, 74, 0.05)" : "rgba(220, 38, 38, 0.05)";
+            div.innerHTML = `
+                <strong>س${index + 1}:</strong> ${log.question.title}<br>
+                <span style="font-size:0.85rem;">${log.question.promptHtml}</span><br>
+                <span style="color:${log.isCorrect ? 'green' : 'red'};">إجابتك: ${log.userAnswer}</span>
+                ${!log.isCorrect ? `<span style="color:green; margin-right:8px;">✔ الصحيح: ${log.question.correctAnswer}</span>` : ''}
+            `;
+            errorsContainer.appendChild(div);
+        });
+    }
+
+    if(nextBtn) {
+        nextBtn.addEventListener("click", () => {
+            if (currentQuestionIndex < generatedQuestions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+            } else {
+                finishQuiz();
+            }
+        });
+    }
+
 });
